@@ -9,6 +9,7 @@ use Lunar\Models\Attribute;
 use Lunar\Models\Collection;
 use Lunar\Models\Language;
 use Lunar\Models\Product;
+use Lunar\Search\CollectionIndexer;
 use Lunar\Search\ScoutIndexer;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
@@ -20,10 +21,10 @@ test('can get correct index name', function () {
     $collection = Collection::factory()->create();
 
     $productIndex = app(ScoutIndexer::class)->searchableAs($product);
-    $collectionIndex = app(ScoutIndexer::class)->searchableAs($collection);
+    $collectionIndex = app(CollectionIndexer::class)->searchableAs($collection);
 
     expect($productIndex)->toEqual('lt_products');
-    expect($collectionIndex)->toEqual('lt_collections');
+    expect($collectionIndex)->toEqual('lt_lunar_collections');
 });
 
 test('searchable is enabled by default', function () {
