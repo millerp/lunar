@@ -103,4 +103,26 @@ trait Searchable
 
         return app(EngineManager::class)->engine();
     }
+
+    /**
+     * Schema for Laravel Scout's Typesense driver.
+     *
+     * Typesense requires a non-empty `fields` array when creating a collection.
+     * Lunar index documents vary per model (translations, attributes, nested data),
+     * so we pin `id` and use a `.*` / `auto` wildcard for automatic field typing.
+     *
+     * @see https://typesense.org/docs/27.0/api/collections.html#with-auto-schema-detection
+     *
+     * @return array{name: string, fields: list<array{name: string, type: string}>}
+     */
+    public function typesenseCollectionSchema(): array
+    {
+        return [
+            'name' => $this->searchableAs(),
+            'fields' => [
+                ['name' => 'id', 'type' => 'string'],
+                ['name' => '.*', 'type' => 'auto'],
+            ],
+        ];
+    }
 }
