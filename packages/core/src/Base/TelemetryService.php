@@ -2,7 +2,7 @@
 
 namespace Lunar\Base;
 
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
@@ -40,7 +40,21 @@ class TelemetryService implements TelemetryServiceInterface
 
         $lastAttempt = Cache::get($this->getCacheKey());
 
-        return ! $lastAttempt || ! now()->parse($lastAttempt)->isToday();
+        if ($lastAttempt === null || $lastAttempt === false || $lastAttempt === '') {
+            return true;
+        }
+
+        if ($lastAttempt instanceof CarbonInterface) {
+            return ! $lastAttempt->isToday();
+        }
+
+        if (is_string($lastAttempt)) {
+            return ! now()->parse($lastAttempt)->isToday();
+        }
+
+        Cache::forget($this->getCacheKey());
+
+        return true;
     }
 
     public function getInsightsPayload(): array
@@ -69,13 +83,13 @@ class TelemetryService implements TelemetryServiceInterface
 
         Cache::forget($this->getCacheKey());
 
-        Cache::remember($this->getCacheKey(), 86400, function (): ?Carbon {
+        Cache::remember($this->getCacheKey(), 86400, function (): ?string {
             $response = Http::withHeader('Accept', 'application/json')
                 ->timeout(3)
                 ->retry(3, 100)
                 ->post($this->getInsightsUrl(), $this->getInsightsPayload());
 
-            return $response->successful() ? now() : null;
+            return $response->successful() ? now()->toIso8601String() : null;
         });
     }
 }

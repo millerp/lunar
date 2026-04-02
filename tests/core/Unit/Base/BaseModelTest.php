@@ -1,14 +1,17 @@
 <?php
 
-uses(\Lunar\Tests\Core\TestCase::class);
+uses(TestCase::class);
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Lunar\Base\BaseModel;
 use Lunar\Base\Traits\HasModelExtending;
 use Lunar\Models\Collection as ModelsCollection;
 use Lunar\Models\Product;
 use Lunar\Models\Url;
+use Lunar\Tests\Core\TestCase;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 test('model is macroable', function () {
     Product::macro('foo', function () {
@@ -65,4 +68,12 @@ test('macros are scoped to the correct model', function () {
 test('base model includes trait', function () {
     $uses = class_uses_recursive(BaseModel::class);
     expect(in_array(HasModelExtending::class, $uses))->toBeTrue();
+});
+
+test('new collection does not instantiate abstract BaseModel (laravel 13 HasCollection)', function () {
+    $product = new Product;
+
+    $collection = $product->newCollection([]);
+
+    expect($collection)->toBeInstanceOf(Collection::class);
 });
