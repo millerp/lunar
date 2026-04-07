@@ -27,6 +27,37 @@ use Lunar\Models\Attribute;
 
 class AttributeData
 {
+    /**
+     * Normalize state after Livewire hydration. FieldType synths dehydrate to plain values; the
+     * previous formatter treated non-FieldType state as empty and cleared list fields in the admin UI.
+     */
+    public static function normalizeHydratedState(mixed $state, Attribute $attribute): mixed
+    {
+        if ($state instanceof FieldType) {
+            return $state->getValue();
+        }
+
+        if ($state === null) {
+            return (new $attribute->type)->getValue();
+        }
+
+        if (is_array($state)) {
+            return $state;
+        }
+
+        if (is_string($state) && $attribute->type === ListFieldFieldType::class) {
+            $decoded = json_decode($state, true);
+
+            return is_array($decoded) ? $decoded : [];
+        }
+
+        if (! is_object($state)) {
+            return $state;
+        }
+
+        return (new $attribute->type)->getValue();
+    }
+
     protected array $fieldTypes = [
         DrodownFieldType::class => Dropdown::class,
         ListFieldFieldType::class => ListField::class,
@@ -52,15 +83,7 @@ class AttributeData
             ->label(
                 $attribute->translate('name')
             )
-            ->formatStateUsing(function ($state) use ($attribute) {
-                if ($state instanceof FieldType) {
-                    return $state->getValue();
-                }
-
-                $instance = new $attribute->type;
-
-                return $instance->getValue();
-            })
+            ->formatStateUsing(fn (mixed $state): mixed => self::normalizeHydratedState($state, $attribute))
             ->mutateStateForValidationUsing(function ($state) {
                 if ($state instanceof FieldType) {
                     return $state->getValue();

@@ -417,7 +417,7 @@ class ProductOptionsWidget extends BaseWidget implements HasActions, HasForms
                     $variant->stock = $variantData['stock'];
                     $variant->save();
 
-                    $basePrice->price = (int) bcmul($variantData['price'], $basePrice->currency->factor);
+                    $basePrice->price = (int) \bcmul($variantData['price'], $basePrice->currency->factor);
                     $basePrice->save();
 
                     $optionsValues = $this->mapOptionValuesToIds($variantData['values']);

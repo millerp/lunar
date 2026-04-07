@@ -57,7 +57,7 @@ class StorefrontSessionManager implements StorefrontSessionInterface
     }
 
     /**
-     * @return \Illuminate\Support\Collection<\Lunar\Models\Contracts\CustomerGroup>
+     * @return Collection<CustomerGroupContract>
      */
     public function getCustomerGroups(): Collection
     {
@@ -65,7 +65,7 @@ class StorefrontSessionManager implements StorefrontSessionInterface
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<\Lunar\Models\Contracts\CustomerGroup>  $customerGroups
+     * @param  Collection<CustomerGroupContract>  $customerGroups
      */
     public function setCustomerGroups(Collection $customerGroups): static
     {
@@ -160,7 +160,19 @@ class StorefrontSessionManager implements StorefrontSessionInterface
             return;
         }
 
-        $this->setChannel(Channel::getDefault());
+        $channel = Channel::query()->where('default', true)->first()
+            ?? Channel::query()->orderBy('id')->first();
+
+        if ($channel === null) {
+            $channel = Channel::query()->create([
+                'name' => 'Webstore',
+                'handle' => 'webstore',
+                'default' => true,
+                'url' => config('app.url'),
+            ]);
+        }
+
+        $this->setChannel($channel);
     }
 
     public function initCustomerGroups(): void
@@ -183,7 +195,18 @@ class StorefrontSessionManager implements StorefrontSessionInterface
             return;
         }
 
-        $this->setCustomerGroup(CustomerGroup::getDefault());
+        $customerGroup = CustomerGroup::query()->where('default', true)->first()
+            ?? CustomerGroup::query()->orderBy('id')->first();
+
+        if ($customerGroup === null) {
+            $customerGroup = CustomerGroup::query()->create([
+                'name' => 'Retail',
+                'handle' => 'retail',
+                'default' => true,
+            ]);
+        }
+
+        $this->setCustomerGroup($customerGroup);
     }
 
     public function initCurrency(): void
@@ -202,7 +225,21 @@ class StorefrontSessionManager implements StorefrontSessionInterface
             return;
         }
 
-        $this->setCurrency(Currency::getDefault());
+        $currency = Currency::query()->where('default', true)->first()
+            ?? Currency::query()->orderBy('id')->first();
+
+        if ($currency === null) {
+            $currency = Currency::query()->create([
+                'code' => 'BRL',
+                'name' => 'Real brasileiro',
+                'exchange_rate' => 1,
+                'decimal_places' => 2,
+                'default' => true,
+                'enabled' => true,
+            ]);
+        }
+
+        $this->setCurrency($currency);
     }
 
     public function initCustomer(): void

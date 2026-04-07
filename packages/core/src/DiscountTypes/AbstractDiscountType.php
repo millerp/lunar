@@ -77,7 +77,7 @@ abstract class AbstractDiscountType implements DiscountTypeInterface
         $validCoupon = filled($conditionCoupon) ? ($cartCoupon === $conditionCoupon) : true;
 
         $minSpend = (int) ($data['min_prices'][$cart->currency->code] ?? 0) / (int) $cart->currency->factor;
-        $minSpend = (int) bcmul($minSpend, $cart->currency->factor);
+        $minSpend = (int) \bcmul($minSpend, $cart->currency->factor);
 
         $lines = $this->getEligibleLines($cart);
         $validMinSpend = $minSpend ? $minSpend < $lines->sum('subTotal.value') : true;

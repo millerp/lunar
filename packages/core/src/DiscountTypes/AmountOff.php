@@ -52,7 +52,7 @@ class AmountOff extends AbstractDiscountType
 
         $decimal = ($values[$currency->code] ?? 0) / $currency->factor;
 
-        $value = (int) bcmul($decimal, $currency->factor);
+        $value = (int) \bcmul($decimal, $currency->factor);
 
         $lines = $this->getEligibleLines($cart);
 

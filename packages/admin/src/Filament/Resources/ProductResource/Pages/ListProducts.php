@@ -73,7 +73,7 @@ class ListProducts extends BaseListRecords
         $variant->prices()->create([
             'min_quantity' => 1,
             'currency_id' => $currency->id,
-            'price' => (int) bcmul($data['base_price'], $currency->factor),
+            'price' => (int) \bcmul($data['base_price'], $currency->factor),
         ]);
         DB::commit();
 

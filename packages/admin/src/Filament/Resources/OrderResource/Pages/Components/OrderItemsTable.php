@@ -186,7 +186,7 @@ class OrderItemsTable extends TableComponent
             ->action(function ($data, BulkAction $action) {
                 $transaction = Transaction::findOrFail($data['transaction']);
 
-                $response = $transaction->refund(bcmul($data['amount'], $this->record->currency->factor), $data['notes']);
+                $response = $transaction->refund(\bcmul($data['amount'], $this->record->currency->factor), $data['notes']);
 
                 if (! $response->success) {
                     $action->failureNotification(

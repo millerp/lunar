@@ -2,11 +2,12 @@
 
 namespace Lunar\FieldTypes;
 
+use Illuminate\Contracts\Support\Arrayable;
 use JsonSerializable;
 use Lunar\Base\FieldType;
 use Lunar\Exceptions\FieldTypeException;
 
-class ListField implements FieldType, JsonSerializable
+class ListField implements Arrayable, FieldType, JsonSerializable
 {
     /**
      * @var array
@@ -40,7 +41,19 @@ class ListField implements FieldType, JsonSerializable
      */
     public function getValue()
     {
-        return json_decode($this->value ?? '[]');
+        if (is_array($this->value)) {
+            return $this->value;
+        }
+
+        return json_decode($this->value ?? '[]', true) ?? [];
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function toArray(): array
+    {
+        return $this->getValue();
     }
 
     /**

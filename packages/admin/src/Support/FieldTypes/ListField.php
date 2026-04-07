@@ -5,6 +5,7 @@ namespace Lunar\Admin\Support\FieldTypes;
 use Filament\Forms\Components\KeyValue;
 use Filament\Schemas\Components\Component;
 use Lunar\Admin\Support\Synthesizers\ListSynth;
+use Lunar\Base\FieldType;
 use Lunar\Models\Attribute;
 
 class ListField extends BaseFieldType
@@ -15,6 +16,19 @@ class ListField extends BaseFieldType
     {
         return KeyValue::make($attribute->handle)
             ->reorderable()
+            ->formatStateUsing(function (mixed $state): array {
+                if ($state instanceof FieldType) {
+                    $state = $state->getValue();
+                }
+
+                if (is_string($state)) {
+                    $decoded = json_decode($state, true);
+
+                    return is_array($decoded) ? $decoded : [];
+                }
+
+                return is_array($state) ? $state : [];
+            })
             ->dehydrateStateUsing(function ($state) {
                 return $state;
             })

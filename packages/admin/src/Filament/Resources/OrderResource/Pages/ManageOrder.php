@@ -426,7 +426,7 @@ class ManageOrder extends BaseViewRecord
             ->action(function ($data, $record, Action $action) {
                 $transaction = Transaction::findOrFail($data['transaction']);
 
-                $response = $transaction->refund(bcmul($data['amount'], $record->currency->factor), $data['notes']);
+                $response = $transaction->refund(\bcmul($data['amount'], $record->currency->factor), $data['notes']);
 
                 if (! $response->success) {
                     $action->failureNotification(
@@ -531,7 +531,7 @@ class ManageOrder extends BaseViewRecord
             ->action(function ($data, $record, Action $action) {
                 $transaction = Transaction::findOrFail($data['transaction']);
 
-                $response = $transaction->capture(bcmul($data['amount'], $record->currency->factor));
+                $response = $transaction->capture(\bcmul($data['amount'], $record->currency->factor));
 
                 if (! $response->success) {
                     $action->failureNotification(
