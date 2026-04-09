@@ -33,7 +33,9 @@ class StripeManager
 
     public function getCartIntentId(CartContract $cart): ?string
     {
-        return $cartModel->meta['payment_intent'] ?? $cart->paymentIntents()->active()->first()?->intent_id;
+        /** @var Cart $cart */
+        return data_get($cart->meta, 'payment_intent')
+            ?? $cart->paymentIntents()->active()->first()?->intent_id;
     }
 
     public function fetchOrCreateIntent(CartContract $cart, array $createOptions = []): PaymentIntent
