@@ -73,7 +73,7 @@ class ShippingRateResolver
         // method's weight_unit later without iterating cart lines again.
         $this->cartWeightKg = (float) $this->cart->lines->sum(function ($line) {
             $value = (float) ($line->purchasable->weight_value ?? 0);
-            $unit = $line->purchasable->weight_unit ?? 'kg';
+            $unit = $this->normalizeWeightUnit($line->purchasable->weight_unit ?? 'kg');
 
             return (float) Converter::from("weight.{$unit}")
                 ->to('weight.kg')
@@ -149,6 +149,8 @@ class ShippingRateResolver
      */
     protected function cartWeightIn(string $unit): float
     {
+        $unit = $this->normalizeWeightUnit($unit);
+
         if ($unit === 'kg') {
             return $this->cartWeightKg;
         }
@@ -158,6 +160,21 @@ class ShippingRateResolver
             ->value($this->cartWeightKg)
             ->convert()
             ->getValue();
+    }
+
+    /**
+     * Lunar legou o default incorreto "mm" em weight_unit (milímetro é comprimento).
+     * O state UpdateWeightUnitToKg corrige a BD; aqui evitamos exceção se ainda existir "mm".
+     */
+    protected function normalizeWeightUnit(string $unit): string
+    {
+        $u = trim($unit);
+
+        if ($u === '') {
+            return 'kg';
+        }
+
+        return $u === 'mm' ? 'kg' : $u;
     }
 
     /**

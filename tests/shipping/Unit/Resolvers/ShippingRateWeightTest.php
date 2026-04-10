@@ -364,3 +364,19 @@ test('sums weight across multiple lines with mixed units', function () {
     expect($rates)->toHaveCount(1)
         ->and($rates->first()->id)->toBe($rate->id);
 });
+
+test('treats legacy weight_unit mm on purchasable as kg', function () {
+    ['cart' => $cart, 'rate' => $rate] = makeWeightScenario(
+        lineWeight: 2.0,
+        lineWeightUnit: 'mm',
+        lineQuantity: 1,
+        minWeight: 1.0,
+        maxWeight: 3.0,
+        methodWeightUnit: 'kg',
+    );
+
+    $rates = Shipping::shippingRates($cart)->get();
+
+    expect($rates)->toHaveCount(1)
+        ->and($rates->first()->id)->toBe($rate->id);
+});
