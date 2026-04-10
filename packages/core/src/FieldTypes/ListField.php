@@ -3,6 +3,7 @@
 namespace Lunar\FieldTypes;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
 use JsonSerializable;
 use Lunar\Base\FieldType;
 use Lunar\Exceptions\FieldTypeException;
@@ -41,19 +42,7 @@ class ListField implements Arrayable, FieldType, JsonSerializable
      */
     public function getValue()
     {
-        if (is_array($this->value)) {
-            return $this->value;
-        }
-
-        return json_decode($this->value ?? '[]', true) ?? [];
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public function toArray(): array
-    {
-        return $this->getValue();
+        return json_decode($this->value ?? '[]');
     }
 
     /**
@@ -80,5 +69,13 @@ class ListField implements Arrayable, FieldType, JsonSerializable
                 'max_items' => 'numeric|nullable',
             ],
         ];
+    }
+
+    /**
+     * Return the value as an array (implements Arrayable for Filament 4 compatibility).
+     */
+    public function toArray(): array
+    {
+        return Arr::wrap((array) json_decode($this->value ?? '[]', associative: true));
     }
 }

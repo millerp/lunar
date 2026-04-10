@@ -76,14 +76,18 @@ class AttributeData
         $attribute->type
         ] ?? TextField::class;
 
-        /** @var \Filament\Schemas\Components\Component $component */
+        /** @var Component $component */
         $component = $fieldType::getFilamentComponent($attribute);
 
         return $component
             ->label(
                 $attribute->translate('name')
             )
-            ->formatStateUsing(fn (mixed $state): mixed => self::normalizeHydratedState($state, $attribute))
+            ->formatStateUsing(function (mixed $state) use ($attribute): mixed {
+                $value = self::normalizeHydratedState($state, $attribute);
+
+                return is_string($value) && blank($value) ? null : $value;
+            })
             ->mutateStateForValidationUsing(function ($state) {
                 if ($state instanceof FieldType) {
                     return $state->getValue();

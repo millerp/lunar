@@ -1,7 +1,6 @@
 <?php
 
-uses(\Lunar\Tests\Core\TestCase::class);
-
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Lunar\FieldTypes\Text;
 use Lunar\FieldTypes\TranslatedText;
@@ -11,8 +10,11 @@ use Lunar\Models\Language;
 use Lunar\Models\Product;
 use Lunar\Search\CollectionIndexer;
 use Lunar\Search\ScoutIndexer;
+use Lunar\Tests\Core\TestCase;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(TestCase::class);
+
+uses(RefreshDatabase::class);
 
 test('can get correct index name', function () {
     Config::set('scout.prefix', 'lt_');
