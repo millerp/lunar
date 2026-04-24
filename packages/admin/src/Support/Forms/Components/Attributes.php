@@ -46,11 +46,6 @@ class Attributes extends Group
         return $this;
     }
 
-    public function getKey(bool $isAbsolute = true): ?string
-    {
-        return 'attributeData'.$this->modelClassOverride;
-    }
-
     public function loadStateFromRelationships(bool $hydrateAll = false): void
     {
         parent::loadStateFromRelationships($hydrateAll);

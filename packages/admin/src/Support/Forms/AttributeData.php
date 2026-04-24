@@ -2,6 +2,7 @@
 
 namespace Lunar\Admin\Support\Forms;
 
+use App\Support\ListFieldAdminState;
 use Filament\Schemas\Components\Component;
 use Illuminate\Support\Collection;
 use Lunar\Admin\Support\FieldTypes\Dropdown;
@@ -86,7 +87,15 @@ class AttributeData
             ->formatStateUsing(function (mixed $state) use ($attribute): mixed {
                 $value = self::normalizeHydratedState($state, $attribute);
 
-                return is_string($value) && blank($value) ? null : $value;
+                if (is_string($value) && blank($value)) {
+                    return null;
+                }
+
+                if ($attribute->type === ListFieldFieldType::class && is_array($value)) {
+                    $value = ListFieldAdminState::toSlugArray($value);
+                }
+
+                return $value;
             })
             ->mutateStateForValidationUsing(function ($state) {
                 if ($state instanceof FieldType) {
