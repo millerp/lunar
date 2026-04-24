@@ -72,9 +72,9 @@ class OrderResource extends BaseResource
             ->persistFiltersInSession()
             ->recordActions([
                 EditAction::make()
-                    ->url(fn ($record) => ManageOrder::getUrl(['record' => $record])),
+                    ->url(fn ($record) => static::getUrl('order', ['record' => $record])),
             ])
-            ->recordUrl(fn ($record) => ManageOrder::getUrl(['record' => $record]))
+            ->recordUrl(fn ($record) => static::getUrl('order', ['record' => $record]))
             ->toolbarActions([
                 BulkActionGroup::make([
                     UpdateStatusBulkAction::make('update_status')
