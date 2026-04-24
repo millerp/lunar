@@ -43,7 +43,7 @@ class ProductIndexer extends ScoutIndexer
         $data = array_merge([
             'id' => (string) $model->id,
             'status' => $model->status,
-            'product_type' => $model->productType->name,
+            'product_type' => $model->productType?->name,
             'brand' => $model->brand?->name,
             'created_at' => (int) $model->created_at->timestamp,
         ], $this->mapSearchableAttributes($model));

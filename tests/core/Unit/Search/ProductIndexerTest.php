@@ -71,3 +71,14 @@ test('can return correct searchable data', function () {
     expect($data)->toHaveKey($attributeD->handle.'_en');
     expect($data)->toHaveKey($attributeD->handle.'_dk');
 });
+
+test('can return searchable data when product type is missing', function () {
+    $product = Product::factory()->create([
+        'product_type_id' => null,
+    ]);
+
+    $data = app(ProductIndexer::class)->toSearchableArray($product);
+
+    expect($data)->toHaveKey('product_type');
+    expect($data['product_type'])->toBeNull();
+});
