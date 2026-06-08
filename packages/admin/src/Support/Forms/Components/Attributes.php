@@ -70,13 +70,17 @@ class Attributes extends Group
         $this->rawState($data);
     }
 
-    public function hydrateState(?array &$hydratedDefaultState, bool $shouldCallHydrationHooks = true): void
+    /**
+     * @param  array<string, mixed>|null  $hydratedDefaultState
+     * @param  array<string, true>  $appliedStateCastPaths
+     */
+    public function hydrateState(?array &$hydratedDefaultState, bool $shouldCallHydrationHooks = true, bool $shouldApplyStateCasts = true, array &$appliedStateCastPaths = []): void
     {
         if ($hydratedDefaultState === null) {
             $this->unwrapFieldTypeState();
         }
 
-        parent::hydrateState($hydratedDefaultState, $shouldCallHydrationHooks);
+        parent::hydrateState($hydratedDefaultState, $shouldCallHydrationHooks, $shouldApplyStateCasts, $appliedStateCastPaths);
     }
 
     public function hydrateStatePartially(array $statePaths, bool $shouldCallHydrationHooks = true): void
